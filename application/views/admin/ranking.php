@@ -49,6 +49,7 @@
                                         <th>Rank</th>
                                         <th>Name</th>
                                         <th>GWA</th>
+                                        <th class="w-[10%]">Award</th>
                                     </tr>
                                 </thead>
                                 <tbody id="table-body">
@@ -104,6 +105,23 @@
                 }, arr);
             });
 
+            $('table').on('click', '.download-award-pdf', function(){
+                displayLoader('main-loader');
+
+                let arr = {subjects: [], min_gwa: $('#min-gwa').val(), rank: $(this).attr('rank')};
+
+                $('.subject-min-grade').each(function($element){
+                    arr.subjects.push({subject_id: $(this).attr('subject-id'), value: $(this).val()});
+                });
+                
+                downloadFileAPI(host+'/api/export/award', 'award-rank-'+$(this).attr('rank')+'.pdf', function(data){
+                    console.log(data);
+                    displayLoader('main-loader', false);
+                }, arr);
+
+                console.log(arr)
+            });
+
             function updateRanking(){
                 $('#error-min-grades').hide();
                 displayLoader('main-loader');
@@ -124,6 +142,9 @@
                                         <td class="p-2 text-center">${i+1}</th>
                                         <td class="p-2 text-center">${item.name}</th>
                                         <td class="p-2 text-center">${Math.round((item.grades_avg_grade + Number.EPSILON) * 100) / 100}</th>
+                                        <td class="p-2 text-center">
+                                            <button rank="${i+1}" class="rounded py-1 px-2 bg-blue-500 hover:bg-blue-600 text-white download-award-pdf">Download</button>
+                                        </th>
                                     </tr>`;
 
                         $('#table-body').append(row);
